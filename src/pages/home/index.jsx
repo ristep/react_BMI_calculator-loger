@@ -21,10 +21,10 @@ const initialValues = {
 };
 
 const schema = yup.object().shape({
-  age: yup.number().min(10).max(200).required(),
-  gender: yup.string().oneOf(["male", "female"]),
-  weight: yup.number().required(),
-  height: yup.number().required(),
+  age: yup.number().min(2).max(150).required(),
+  gender: yup.string().oneOf(["Male", "Female","Other"]),
+  weight: yup.number().min(25).max(250).required(),
+  height: yup.number().min(.60).max(2.30).required(),
 });
 
 function Forma() {
@@ -42,24 +42,19 @@ function Forma() {
   useEffect(() => {
     setData({
       ...formik.values,
-      BMI: (
-        (formik.values.weight / Math.pow(formik.values.height, 2)) *
-        10000
-      ).toFixed(2, 4),
+      BMI: (formik.values.weight / Math.pow(formik.values.height, 2)).toFixed(2),
     });
   }, [formik.values]);
 
   return (
-    <>
+    <Container>
       <Form noValidate onSubmit={formik.onSubmit}>
         <Row md={12} className="mb-4">
-          <Form.Group as={Col} md={6} >
+          <Form.Group as={Col} md={6}>
             <Form.Label>Age</Form.Label>
             <Form.Control  
-              min="100"
-              max="260"
               step="1"
-              type="text"
+              type="number"
               placeholder="Age"
               name="age"
               value={formik.values.are}
@@ -81,9 +76,9 @@ function Forma() {
             <Form.Label>Height</Form.Label>
             <Form.Control
               className="form-range"
-              min="100"
-              max="260"
-              step="1"
+              min="0.6"
+              max="2.30"
+              step="0.01"
               type="range"
               placeholder="Height"
               name="height"
@@ -138,7 +133,7 @@ function Forma() {
         <Button type="submit">Log data</Button>
         <ReactJson src={data} />
       </Form>
-    </>
+    </Container>
   );
 }
 

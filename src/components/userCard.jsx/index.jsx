@@ -209,7 +209,7 @@ const UserCard = (props) => {
                 type="submit"
                 onClick={() => logout()}
               >
-                Logonut
+                Logout
               </Button>
             </Col>
           </Row>
