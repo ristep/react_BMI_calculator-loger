@@ -13,12 +13,25 @@ import {
 import ReactJson from "react-json-view";
 
 const initialValues = {
-  age: 25,
+  age: 50,
   gender: "",
-  weight: 0,
-  height: 0,
+  weight: 90,
+  height: 1.75,
   BMI: 0,
 };
+
+const bmiRanges = [
+  { from:0, to:18.5, color:"#1b181b"},
+  { from:18.5, to:25, color:"#cdfffb"},
+  { from:25, to:30, color:"#24d424"},
+  { from:30, to:35, color:"#fdbb84"},
+  { from:35, to:40, color:"#fc8d59"},
+  { from:40, to:45, color:"#ef6b0d"},
+  { from:45, to:50, color:"#e6550d"},
+  { from:50, to:55, color:"#d84315"},
+  { from:55, to:60, color:"#bf360c"}, 
+  { from:60, to:650, color:"#1a0c06"},
+];
 
 const schema = yup.object().shape({
   age: yup.number().min(2).max(150).required(),
@@ -29,6 +42,7 @@ const schema = yup.object().shape({
 
 function Forma() {
   const [data, setData] = useState(initialValues);
+  const [ bmiColor, setBmiColor] = useState("grey");
 
   const formik = useFormik({
     validationSchema: schema,
@@ -46,14 +60,30 @@ function Forma() {
     });
   }, [formik.values]);
 
+  useEffect(() => {
+    bmiRanges.forEach( (range) => { 
+      if(data.BMI >= range.from && data.BMI <= range.to){
+        setBmiColor(range.color);
+      }
+    });
+  }, [data.BMI]);     
+
+
   return (
-    <Container>
-      <Form noValidate onSubmit={formik.onSubmit}>
-        <Row md={12} className="mb-4">
-          <Form.Group as={Col} md={6}>
+    <>
+      <Form noValidate>
+        <Row className="p-2 border bg-light">
+          <Form.Group className="col-6" >
+            <Form.Label>Gender</Form.Label>
+            <Form.Select name="gender" onChange={formik.handleChange} >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </Form.Select>
+          </Form.Group>
+          <Form.Group className="col-6">
             <Form.Label>Age</Form.Label>
             <Form.Control  
-              step="1"
               type="number"
               placeholder="Age"
               name="age"
@@ -62,17 +92,10 @@ function Forma() {
               isInvalid={!!formik.errors.age}
             />
           </Form.Group>
-          <Form.Group inline={true} as={Col} md={6} >
-            <Form.Label>Gender</Form.Label>
-            <Form.Select name="gender" onChange={formik.handleChange} >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </Form.Select>
-          </Form.Group>
         </Row>
-        <Row md={12} className="mb-4">
-          <Form.Group as={Col} md="10" >
+
+        <Row md={12} className="p-2 border bg-light">
+          <Form.Group as={Col} md="9">
             <Form.Label>Height</Form.Label>
             <Form.Control
               className="form-range"
@@ -87,7 +110,7 @@ function Forma() {
               isInvalid={!!formik.errors.height}
             />
           </Form.Group>
-          <Form.Group as={Col} md="2">
+          <Form.Group as={Col} md="3">
             <Form.Control
               style={{ marginTop: "20px" }}
               type="text"
@@ -98,8 +121,8 @@ function Forma() {
             />
           </Form.Group>
         </Row>
-        <Row md={12} className="mb-4">
-          <Form.Group as={Col} md="10">
+        <Row md={12} className="p-2 border bg-light" >
+          <Form.Group as={Col} md="9">
             <Form.Label>Weight</Form.Label>
             <Form.Control
               className="form-range"
@@ -114,7 +137,7 @@ function Forma() {
               isInvalid={!!formik.errors.weight}
             />
           </Form.Group>
-          <Form.Group as={Col} md="2" >
+          <Form.Group as={Col} md="3" >
             <Form.Control
               style={{ marginTop: "20px" }}
               type="number"
@@ -125,15 +148,21 @@ function Forma() {
             />
           </Form.Group>
         </Row>
-        <Row md={12} className="mb-4">
-          <h2>
-            Body Mass Index (BMI) <Badge bg="primary">{data.BMI}</Badge>
-          </h2>
+        <Row md={12} className="p-3 border bg-primary">
+          <Col>
+            <h2 style={{ marginTop: "0.1em"}}>
+              <Badge className="border" style={{ backgroundColor: bmiColor }}>BMI = {data.BMI}</Badge>
+            </h2>
+          </Col>
+          <Col>
+          </Col>
+          <Col>
+            <Button onClick={formik.onSubmit} style={{contentAlign: "center", width:"100%", marginTop: "0.5em"}}>Log data</Button>
+          </Col>
         </Row>
-        <Button type="submit">Log data</Button>
-        <ReactJson src={data} />
+        {/* <ReactJson src={data} /> */}
       </Form>
-    </Container>
+    </>
   );
 }
 

@@ -1,5 +1,3 @@
-import "./styles/App.scss";
-
 import React from "react";
 
 import Home from "pages/home";
@@ -17,11 +15,13 @@ import RegisterUser from "pages/RegisterUser";
 import NewUserUpdate from "pages/NewUserUpdate";
 import AppFooter from "pages/AppFooter";
 
+import "./styles/App.scss";
+
 const AppBody = (props) => {
   const { setTheme } = props;
 
   return (
-    <Container className="appBody">
+    <div className="appBody">
       <Switch>
         <Route exact path={["/", "/home", "/doma"]}>
           <Home />
@@ -47,7 +47,7 @@ const AppBody = (props) => {
           <RegisterUser />
         </Route>
       </Switch>
-    </Container>
+    </div>
   );
 };
 
