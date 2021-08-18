@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState } from "react";
 import Axios from "Axios";
 
-const initLoginState = { OK: false, error: false, data:{ name:"Nikoj"} };
+const initauthData = { OK: false, error: false, data:{ name:"Nikoj"} };
 
 const getUserTokenQuery = (username, password) => ({
   getToken: {
@@ -11,22 +11,22 @@ const getUserTokenQuery = (username, password) => ({
 });
 
 const useUserLoginData = () => {
-  const [loginState, setLoginState] = useState(initLoginState);
+  const [authData, setAuthData] = useState(initauthData);
 
   const clearKey   = () => {
-    setLoginState(initLoginState);
+    setAuthData(initauthData);
   };
 
   const getKey = (e, formData) => {
     e.preventDefault();
     (async () => {
-      setLoginState({});
+      setAuthData({});
       await Axios.post(
         "",
         getUserTokenQuery(formData.username, formData.password)
       )
         .then((ret) => {
-          setLoginState({
+          setAuthData({
             ...ret.data,
             status: ret.status,
             statusText: ret.statusText,
@@ -34,7 +34,7 @@ const useUserLoginData = () => {
           });
         })
         .catch((err) => {
-          setLoginState({
+          setAuthData({
             data:{},
             status: 204,
             statusText: "Data base error!!",
@@ -50,16 +50,18 @@ const useUserLoginData = () => {
   };
 
 
-  return ( { loginState, getKey, clearKey } );
+  return ( { authData, getKey, clearKey } );
 }
 
 const userDataContext = createContext();
+
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useUserLoginData().
 export function ProvideAuthData({ children }) {
     const  authObject  = useUserLoginData();
     return <userDataContext.Provider value={authObject}>{children}</userDataContext.Provider>;
   }  
+
 // Hook for child components to get the auth object ...
 // ... and re-render when it changes.
 export const useAuthData = () => {

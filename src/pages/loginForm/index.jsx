@@ -25,7 +25,7 @@ let valSchema = yup.object().shape({
 const LoginForm = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const { onBlur, errors } = useValiHook({ valSchema, formData });
-  const { loginState, getKey, clearKey } = useAuthData();
+  const { authData, getKey, clearKey } = useAuthData();
   const history = useHistory();
 
   const onChange = (ev) => {
@@ -34,7 +34,7 @@ const LoginForm = () => {
 
   return (
     <>
-      {!loginState.OK && (
+      {!authData.OK && (
         <Container id="login-box">
           <Card>
             <Card.Title>
@@ -82,9 +82,9 @@ const LoginForm = () => {
                   </Form.Label>
                 </Form.Group>
               </Form>
-              {loginState.error && (
+              {authData.error && (
                 <div className="alert alert-danger" role="alert">
-                  {loginState.message}
+                  {authData.message}
                 </div>
               )}
             </Card.Body>
@@ -117,9 +117,9 @@ const LoginForm = () => {
           </Card>
         </Container>
       )}
-      {loginState.OK && (
+      {authData.OK && (
         <Container id="login-box">
-          <UserCard userID={loginState.data.id} logout={clearKey} />
+          <UserCard userID={authData.data.id} logout={clearKey} />
         </Container>
       )}
     </>

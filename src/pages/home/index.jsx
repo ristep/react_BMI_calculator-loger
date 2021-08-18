@@ -129,20 +129,9 @@ function Forma() {
               <option value="age3544">35-44</option>
               <option value="age4554">45-54</option>
               <option value="age5564">55-64</option>
-              <option value="age65AB">65-AB</option>
+              <option value="age65AB">65-120</option>
             </Form.Select>
           </Form.Group>
-          {/* <Form.Group className="col-6">
-            <Form.Label>Age</Form.Label>
-            <Form.Control  
-              type="number"
-              placeholder="Age"
-              name="age"
-              value={formik.values.are}
-              onChange={formik.handleChange}
-              isInvalid={!!formik.errors.age}
-            />
-          </Form.Group> */}
         </Row>
 
         <Row md={12} className="p-2 border bg-light">

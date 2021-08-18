@@ -4,7 +4,7 @@ import { Navbar, Nav, NavLink  } from "react-bootstrap";
 //import { FaBars } from "react-icons/fa";
 
 const MainNavBar = (props) => {
-  const { loginState } = useAuthData();
+  const { authData } = useAuthData();
 
   return (
     <Navbar fixed className="navbar-dark bg-primary" expand="lg">
@@ -15,19 +15,19 @@ const MainNavBar = (props) => {
           <NavLink href="#/home">Home</NavLink>
 
           <NavLink href="#/about">About</NavLink>
-          {!loginState.OK ? (
+          {!authData.OK ? (
             <NavLink href="#/login" className="ms-auto ml-auto">
               Login
             </NavLink>
           ) : (
             <NavLink href="#/login" className="ms-auto ml-auto">
-              {loginState?.data.name}:{" "}
-              {loginState?.data.first_name + " " + loginState?.data.second_name}
+              {authData?.data.name}:{" "}
+              {authData?.data.first_name + " " + authData?.data.second_name}
             </NavLink>
           )}
         </Nav>
       </Navbar.Collapse>
-    </Navbar>
+    </Navbar> 
   );
 };
 

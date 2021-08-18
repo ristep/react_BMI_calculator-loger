@@ -1,4 +1,3 @@
-// import "./form.scss";
 import React from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { useParams } from "react-router-dom";
@@ -73,13 +72,12 @@ const User = () => {
   const { onBlur,  errors } = useValiHook({ valSchema, formData });
 
   return (
-    <Container style={{ maxWidth: "600px" }}>
+    <Container id="UserCard">
       {(isLoading || isFetching) && <Spinner />}
 
       {error && <div>{"An error has occurred: " + error.message}</div>}
 
       {isSuccess && !error && !(isLoading || isFetching) && (
-        <>
           <Card>
             <Card.Title>
               <h5>
@@ -87,9 +85,9 @@ const User = () => {
               </h5>
             </Card.Title>
             <Card.Body>
-              <Form
+              <Form 
                 onSubmit={submitChanges}
-                className="p-2 bg-light border"
+                className="bg-light border row no-gutters"
                 size="sm"
               >
                 <Form.Group>
@@ -198,7 +196,6 @@ const User = () => {
 
             {/* <ReactJson name="errorList" src={errors} /> */}
           </Card>
-        </>
       )}
     </Container>
   );

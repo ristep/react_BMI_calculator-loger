@@ -9,7 +9,6 @@ import LoginForm from "pages/loginForm";
 
 import User from "pages/user";
 import { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import MainNavBar from "components/mainNavBar";
 import RegisterUser from "pages/RegisterUser";
 import NewUserUpdate from "pages/NewUserUpdate";
@@ -21,7 +20,7 @@ const AppBody = (props) => {
   const { setTheme } = props;
 
   return (
-    <div className="appBody">
+    <div className="appBody"> 
       <Switch>
         <Route exact path={["/", "/home", "/doma"]}>
           <Home />
@@ -53,8 +52,6 @@ const AppBody = (props) => {
 
 function App() {
   const [theme, setTheme] = useState("./styles/Cerulean/main.css");
-  // const [sidebar, setSidebar] = useState(true);
-  // const togleSidebar = () => setSidebar(!sidebar);
 
   return (
     <div className="App">
@@ -62,17 +59,7 @@ function App() {
       <ProvideAuthData>
         <Router>
           <MainNavBar />
-          <Container>
-            <Row>
-              <Col>
-              </Col>
-              <Col xs={10}>
-                <AppBody setTheme={setTheme} />
-              </Col>
-              <Col>
-              </Col>
-            </Row>
-          </Container>
+          <AppBody setTheme={setTheme} />
           <AppFooter />
         </Router>
       </ProvideAuthData>
