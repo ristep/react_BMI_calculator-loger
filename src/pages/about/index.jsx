@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button, Container } from "react-bootstrap";
 
 const About = (props) => {
