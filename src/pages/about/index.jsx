@@ -2,10 +2,12 @@ import React from "react";
 import { Button, Container } from "react-bootstrap";
 import ReactJson from "react-json-view";
 import { useAuthData } from "hooks/authData";
+import { useBmiHistory } from "hooks/useBmiHistory";
 
 const About = (props) => {
   const { setTheme } = props;
   const { authData } = useAuthData();
+  const { bmiHistoryData } = useBmiHistory();
 
   const them = (theme) => ("./styles/" + theme + "/main.css" );
 
@@ -18,9 +20,10 @@ const About = (props) => {
       <Button style={{backgroundColor:"rgb(44, 62, 80)"}}    onClick={()=>setTheme(them("Flatly"))}>Flatly</Button>
       <Button style={{backgroundColor:"rgb(47, 164, 231)"}}  onClick={()=>setTheme(them("Cerulean"))}>Cerulean</Button>
       <Button style={{backgroundColor:"rgb(69, 130, 236)"}}  onClick={()=>setTheme(them("Litera"))}>Litera</Button>
-      <ReactJson src={authData} />
+      <ReactJson src={bmiHistoryData} />
    </Container>
-  );
+
+);
 
 }
 

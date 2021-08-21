@@ -10,6 +10,9 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
+import { useAuthData } from "hooks/authData";
+import ReactJson from "react-json-view";
+import { useBmiHistory } from "hooks/useBmiHistory";
 // import ReactJson from "react-json-view";
 
 const initialValues = {
@@ -85,15 +88,21 @@ const schema = yup.object().shape({
 
 function Forma() {
   const [data, setData] = useState(initialValues);
+  const { bmiAddHistory, bmiStaleData, bmiGetHistory } = useBmiHistory();
+  const { authData } = useAuthData();
 
   const formik = useFormik({
     validationSchema: schema,
-    initialValues,
-    onSubmit: (values) => {
-      values.preventdefaults();
-      console.log(JSON.stringify(values, null, 2));
-    },
+    initialValues
   });
+
+  const submitBmi = () => {
+    bmiAddHistory({...data, user_id: authData.data.id});
+  };
+
+  useEffect(() => {
+    bmiGetHistory(authData.data.id);
+  },[data]);
 
   useEffect(() => {
     const bmi = (formik.values.weight / Math.pow(formik.values.height, 2));
@@ -109,7 +118,7 @@ function Forma() {
   ]);
 
   return (
-    <>
+    <Container style={{maxWidth: "680px"}}>
       <Form noValidate>
         <Row className="p-2 border bg-light">
           <Form.Group className="col-6">
@@ -195,32 +204,28 @@ function Forma() {
                 BMI = {data.BMI}
               </Badge>
             </h2>
-            <label for="bmiIndicator"> {data.bmiMessage}</label>
+            <label for="bmiIndicator">{data.bmiMessage}</label>
           </Col>
           <Col></Col>
           <Col>
-            <Button
-              onClick={formik.onSubmit}
-              style={{
-                contentAlign: "center",
-                width: "100%",
-                marginTop: "0.5em",
-              }}
-            >
+            <Button onClick={submitBmi} style={{contentAlign: "center", width: "100%", marginTop: "0.5em"}}>
               Log data
             </Button>
           </Col>
         </Row>
         {/* <ReactJson src={data} /> */}
       </Form>
-    </>
+    </Container>
   );
 }
 
 const Home = () => {
+  const { bmiHistoryData } = useBmiHistory();
+  
   return (
     <Container>
       <Forma setValues />
+      <ReactJson src={bmiHistoryData} />
     </Container>
   );
 };
