@@ -10,6 +10,11 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
+import { useBmiHistory, useAddBmiHistory } from "hooks/useBmiHistory";
+import ReactJson from "react-json-view";
+import { useAuthData } from "hooks/authData";
+import BmiTable from "components/bmiTable";
+
 // import ReactJson from "react-json-view";
 
 const initialValues = {
@@ -84,33 +89,28 @@ const schema = yup.object().shape({
 });
 
 function Forma() {
-  const [data, setData] = useState(initialValues);
+  const { authData } = useAuthData();
+  const [ data, setData ] = useState(initialValues);
+  const { data:bmiData } = useBmiHistory({userID: authData.data.id}); 
+  const { mutate } = useAddBmiHistory();
 
-  const formik = useFormik({
-    validationSchema: schema,
-    initialValues,
-    onSubmit: (values) => {
-      values.preventdefaults();
-      console.log(JSON.stringify(values, null, 2));
-    },
-  });
+  const formik = useFormik({  validationSchema: schema,  initialValues, onSubmit: (values) => { values.preventdefaults(); }  });
+
+  const addBmi = () => {
+    console.log({user_id: authData.data.id,...data});
+    mutate({user_id: authData.data.id,...data});
+  };
 
   useEffect(() => {
     const bmi = (formik.values.weight / Math.pow(formik.values.height, 2));
     const { color, message } = bmiDescription(bmi+ageCor(formik.values.age)+genderCor(formik.values.gender));
-    setData({
-      ...formik.values,
-      BMI: bmi.toFixed(2),
-      bmiColor: color,
-      bmiMessage: message,
-    });
-  }, [
-    formik.values 
-  ]);
+    setData({...formik.values,  BMI: bmi.toFixed(2),  bmiColor: color,  bmiMessage: message, });
+  }, [formik.values ]);
 
   return (
     <>
-      <Form noValidate>
+      <Form noValidate onSubmit={formik.onSubmit} >
+
         <Row className="p-2 border bg-light">
           <Form.Group className="col-6">
             <Form.Label>Gender</Form.Label>
@@ -200,7 +200,7 @@ function Forma() {
           <Col></Col>
           <Col>
             <Button
-              onClick={formik.onSubmit}
+              onClick={addBmi}
               style={{
                 contentAlign: "center",
                 width: "100%",
@@ -211,8 +211,11 @@ function Forma() {
             </Button>
           </Col>
         </Row>
-        {/* <ReactJson src={data} /> */}
       </Form>
+        {/* <ReactJson src={bmiData.data} /> */}
+        { bmiData.OK && 
+            <BmiTable data={bmiData.data} />
+    }    
     </>
   );
 }

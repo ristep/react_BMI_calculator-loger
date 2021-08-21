@@ -23,7 +23,7 @@ let valSchema = yup.object().shape({
 });
 
 const LoginForm = () => {
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [ formData, setFormData ] = useState({ username: "", password: "" });
   const { onBlur, errors } = useValiHook({ valSchema, formData });
   const { authData, getKey, clearKey } = useAuthData();
   const history = useHistory();
