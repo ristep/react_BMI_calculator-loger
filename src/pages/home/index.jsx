@@ -18,7 +18,7 @@ import BmiTable from "components/bmiTable";
 // import ReactJson from "react-json-view";
 
 const initialValues = {
-  age: "ageNone",
+  age: "None",
   gender: "Other",
   weight: 90,
   height: 1.75,
@@ -56,13 +56,13 @@ const genderCor = (gender) => {
 };
 
 const ageCorTable = {
-"ageNone": -0.0,
-"age1924": -0.0,
-"age2534": -1.0,
-"age3544": -2.0,
-"age4554": -3.0,
-"age5564": -4.0,
-"age65AB": -5.0,
+"None": -0.0,
+"19-24": -0.0,
+"25-34": -1.0,
+"35-44": -2.0,
+"45-54": -3.0,
+"55-64": -4.0,
+"65-120": -5.0,
 };
 
 const ageCor = (age) => {
@@ -123,13 +123,13 @@ function Forma() {
           <Form.Group className="col-6">
             <Form.Label>Age group</Form.Label>
             <Form.Select name="age" onChange={formik.handleChange}>
-              <option value="ageNone">Select</option>
-              <option value="age1924">19-24</option>
-              <option value="age2534">25-34</option>
-              <option value="age3544">35-44</option>
-              <option value="age4554">45-54</option>
-              <option value="age5564">55-64</option>
-              <option value="age65AB">65-120</option>
+              <option value="None">None</option>
+              <option value="19-24">19-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65-120">65-120</option>
             </Form.Select>
           </Form.Group>
         </Row>
@@ -213,9 +213,11 @@ function Forma() {
         </Row>
       </Form>
         {/* <ReactJson src={bmiData.data} /> */}
-        { bmiData.OK && 
+        <div style={{paddingTop: "23px"}}>
+        { bmiData?.OK && 
             <BmiTable data={bmiData.data} />
-    }    
+        }    
+        </div>
     </>
   );
 }

@@ -38,6 +38,16 @@ const bmiAddHistoryQuery = (prm) => {
   };
 };
 
+const bmiRemoveHistoryQuery = (prm) => {
+  const { id } = prm;
+  return {
+    Delete: {
+      type: "bmi_log",
+      id: id,
+    },
+  };
+};
+
 export const useBmiHistory = (props) => {
   const queryClient = useQueryClient()
   const { userID } = props;
@@ -63,3 +73,15 @@ export const useAddBmiHistory = () => {
   
   return({ mutate, isLoading, isError, isSuccess });
   };  
+
+  export const useRemoveBmiHistory = () => {
+    const queryClient = useQueryClient()
+    const { mutate, isLoading, isError, isSuccess } = useMutation(  
+        (id) => Axios.post( "", bmiRemoveHistoryQuery(id) ),
+          { 
+            onSuccess: () =>  queryClient.invalidateQueries('bmiGetHistoryQuery')
+          } 
+        ); 
+    
+    return({ removeItem: mutate, isLoading, isError, isSuccess });
+    };    

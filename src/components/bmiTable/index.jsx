@@ -1,7 +1,9 @@
+import { useRemoveBmiHistory } from 'hooks/useBmiHistory'
 import React from 'react'
+import { Table, Button } from 'react-bootstrap'
 import { useTable } from 'react-table'
 
-function Table({ columns, data }) {
+const Tabela = ({ columns, data }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -12,9 +14,17 @@ function Table({ columns, data }) {
     columns,
     data,
   })
+const { removeItem }   = useRemoveBmiHistory(); 
+
+  const cellRender = (cell) => {
+    if(cell.column.Header==="Delete"){ 
+      return (<Button danger onClick={()=>removeItem({ id: cell.value})} >{cell.value}</Button> );
+    }  
+    return cell.render('Cell');
+  }
 
   return (
-    <table {...getTableProps()}>
+      <Table striped hover size="sm"  {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
           <tr {...headerGroup.getHeaderGroupProps()}>
@@ -30,13 +40,13 @@ function Table({ columns, data }) {
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                return <td {...cell.getCellProps()}>{cellRender(cell)}</td>
               })}
             </tr>
           )
         })}
       </tbody>
-    </table>
+    </Table>
   )
 }
 
@@ -44,9 +54,6 @@ const  BmiTable = (props) => {
   const { data } = props;
   const columns = React.useMemo(
     () => [
-      {
-        Header: 'Name',
-        columns: [
           {
             Header: 'Age',
             accessor: 'age',
@@ -65,19 +72,21 @@ const  BmiTable = (props) => {
           },
           {
             Header: 'BMI',
-            accessor: 'bmi',
+            accessor: 'bmic',
           },
-        ],
-      },
-    ],
-    []
-  )
+          {
+            Header: 'Date Time',
+            accessor: 'date_time',
+          },
+          {
+            Header: 'Delete',
+            accessor: 'id',
+          }  
+        ], []
+  );
 
  return (
-   <div>
-     <h1>BMI Table</h1>
-       <Table columns={columns} data={data} />
-   </div>
+     <Tabela columns={columns} data={data} />
   )
 }
 
