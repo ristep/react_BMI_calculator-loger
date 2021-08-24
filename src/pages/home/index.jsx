@@ -10,10 +10,10 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
-import { useBmiHistory, useAddBmiHistory } from "hooks/useBmiHistory";
-import ReactJson from "react-json-view";
+import { useBmiHistory } from "hooks/useBmiHistory";
 import { useAuthData } from "hooks/authData";
 import BmiTable from "components/bmiTable";
+import Spinner from "components/spinner";
 
 // import ReactJson from "react-json-view";
 
@@ -86,19 +86,20 @@ const schema = yup.object().shape({
   gender: yup.string().oneOf(["Male", "Female", "Other"]),
   weight: yup.number().min(25).max(250).required(),
   height: yup.number().min(0.6).max(2.3).required(),
+  date_time: yup.date().required(),
 });
 
 function Forma() {
   const { authData } = useAuthData();
   const [ data, setData ] = useState(initialValues);
-  const { data:bmiData } = useBmiHistory({userID: authData.data.id}); 
-  const { mutate } = useAddBmiHistory();
+  const { data:bmiData, addBmiHistory, isAdding, isLoading  } = useBmiHistory({userID: authData.data.id}); 
+  // const { addBmiHistory, isLoading } = useAddBmiHistory();
 
   const formik = useFormik({  validationSchema: schema,  initialValues, onSubmit: (values) => { values.preventdefaults(); }  });
 
   const addBmi = () => {
     console.log({user_id: authData.data.id,...data});
-    mutate({user_id: authData.data.id,...data});
+    addBmiHistory({user_id: authData.data.id,...data});
   };
 
   useEffect(() => {
@@ -109,10 +110,24 @@ function Forma() {
 
   return (
     <>
+      { (isLoading||isAdding)  && <Spinner />}
+
       <Form noValidate onSubmit={formik.onSubmit} >
 
         <Row className="p-2 border bg-light">
-          <Form.Group className="col-6">
+          <Form.Group className="col-4">
+            <Form.Label>Date/Time</Form.Label>
+            <Form.Control
+              className="date_time"
+              type="date"
+              placeholder="date_time"
+              name="date_time"
+              value={formik.values.date_time}
+              onChange={formik.handleChange}
+              isInvalid={!!formik.errors.date_time}
+            />
+          </Form.Group>
+          <Form.Group className="col-4">
             <Form.Label>Gender</Form.Label>
             <Form.Select name="gender" onChange={formik.handleChange}>
               <option value="Male">Male</option>
@@ -120,7 +135,7 @@ function Forma() {
               <option value="Other">Other</option>
             </Form.Select>
           </Form.Group>
-          <Form.Group className="col-6">
+          <Form.Group className="col-4">
             <Form.Label>Age group</Form.Label>
             <Form.Select name="age" onChange={formik.handleChange}>
               <option value="None">None</option>

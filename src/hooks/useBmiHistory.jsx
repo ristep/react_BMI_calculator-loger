@@ -23,7 +23,7 @@ const bmiGetHistoryQuery = (par) => {
 };
 
 const bmiAddHistoryQuery = (prm) => {
-  const { user_id, age, gender, weight, height } = prm;
+  const { user_id, age, gender, weight, height, date_time } = prm;
   return {
     Create: {
       type: "bmi_log",
@@ -33,6 +33,7 @@ const bmiAddHistoryQuery = (prm) => {
         gender,
         weight,
         height,
+        date_time
       },
     },
   };
@@ -51,37 +52,30 @@ const bmiRemoveHistoryQuery = (prm) => {
 export const useBmiHistory = (props) => {
   const queryClient = useQueryClient()
   const { userID } = props;
+  
   const { isLoading, isError, data, error } = useQuery
     (['bmiGetHistoryQuery',{userID}], () => 
     Axios.post("", bmiGetHistoryQuery(userID)).then( ret => ret.data )
   );
 
-  const invalidate = () =>
+  const invalidateBmiHistory = () =>
     queryClient.invalidateQueries('bmiGetHistoryQuery');
-  
-  return {  isLoading, isError, data, error, invalidate };
-};
-
-export const useAddBmiHistory = () => {
-  const queryClient = useQueryClient()
-  const { mutate, isLoading, isError, isSuccess } = useMutation(  
+ 
+  const { mutate:addBmiHistory, isLoading:isAdding, isError:isAddError, isSuccess:issAddSuccess } = useMutation(  
       (newBmi) => Axios.post( "", bmiAddHistoryQuery(newBmi) ),
-        {
-          onSuccess: () =>  queryClient.invalidateQueries('bmiGetHistoryQuery')
-        } 
+        { onSuccess: () => queryClient.invalidateQueries('bmiGetHistoryQuery') } 
       ); 
   
-  return({ mutate, isLoading, isError, isSuccess });
-  };  
+  const { mutate:removeBmiItem, isLoading:isRemoving, isError:isRemovingError, isSuccess:isRemovingSuccess } = useMutation(  
+      (id) => Axios.post( "", bmiRemoveHistoryQuery(id) ),
+        { onSuccess: () =>  queryClient.invalidateQueries('bmiGetHistoryQuery')} 
+      ); 
 
-  export const useRemoveBmiHistory = () => {
-    const queryClient = useQueryClient()
-    const { mutate, isLoading, isError, isSuccess } = useMutation(  
-        (id) => Axios.post( "", bmiRemoveHistoryQuery(id) ),
-          { 
-            onSuccess: () =>  queryClient.invalidateQueries('bmiGetHistoryQuery')
-          } 
-        ); 
-    
-    return({ removeItem: mutate, isLoading, isError, isSuccess });
-    };    
+  return { 
+           addBmiHistory, isAddError, issAddSuccess, isAdding,    
+           removeBmiItem, isRemovingError, isRemovingSuccess, isRemoving, 
+           data, isError, isLoading, 
+           error, invalidateBmiHistory 
+        };
+};
+

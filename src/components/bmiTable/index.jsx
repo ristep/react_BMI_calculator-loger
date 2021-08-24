@@ -1,4 +1,6 @@
-import { useRemoveBmiHistory } from 'hooks/useBmiHistory'
+import Spinner from 'components/spinner'
+import { useAuthData } from 'hooks/authData'
+import { useBmiHistory } from 'hooks/useBmiHistory'
 import React from 'react'
 import { Table, Button } from 'react-bootstrap'
 import { useTable } from 'react-table'
@@ -14,16 +16,20 @@ const Tabela = ({ columns, data }) => {
     columns,
     data,
   })
-const { removeItem }   = useRemoveBmiHistory(); 
+
+const { authData } = useAuthData();  
+const { removeBmiItem, isRemoving }   = useBmiHistory({userID: authData.data.id}); 
 
   const cellRender = (cell) => {
     if(cell.column.Header==="Delete"){ 
-      return (<Button danger onClick={()=>removeItem({ id: cell.value})} >{cell.value}</Button> );
+      return (<Button variant="danger" size="sm" onClick={()=>removeBmiItem({ id: cell.value})} >{cell.value}</Button> );
     }  
     return cell.render('Cell');
   }
 
   return (
+    <>
+      { (isRemoving)  && <Spinner />}
       <Table striped hover size="sm"  {...getTableProps()}>
       <thead>
         {headerGroups.map(headerGroup => (
@@ -47,6 +53,7 @@ const { removeItem }   = useRemoveBmiHistory();
         })}
       </tbody>
     </Table>
+  </>
   )
 }
 
