@@ -10,10 +10,14 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
+import "react-datepicker/dist/react-datepicker.css";
+
 import { useBmiHistory } from "hooks/useBmiHistory";
 import { useAuthData } from "hooks/authData";
 import BmiTable from "components/bmiTable";
 import Spinner from "components/spinner";
+import DatePicker from "react-datepicker";
+import moment from "moment";
 
 // import ReactJson from "react-json-view";
 
@@ -23,6 +27,7 @@ const initialValues = {
   weight: 90,
   height: 1.75,
   BMI: 0,
+  date_time: ""
 };
 
 const bmiRanges = [
@@ -93,12 +98,23 @@ function Forma() {
   const { authData } = useAuthData();
   const [ data, setData ] = useState(initialValues);
   const { data:bmiData, addBmiHistory, isAdding, isLoading  } = useBmiHistory({userID: authData.data.id}); 
-  // const { addBmiHistory, isLoading } = useAddBmiHistory();
+
+  const [startDate, setStartDate] = useState(new Date());
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleChange = (e) => {
+    setIsOpen(!isOpen);
+    setStartDate(e);
+  };
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    setIsOpen(!isOpen);
+  };
 
   const formik = useFormik({  validationSchema: schema,  initialValues, onSubmit: (values) => { values.preventdefaults(); }  });
 
   const addBmi = () => {
-    console.log({user_id: authData.data.id,...data});
     addBmiHistory({user_id: authData.data.id,...data});
   };
 
@@ -108,23 +124,44 @@ function Forma() {
     setData({...formik.values,  BMI: bmi.toFixed(2),  bmiColor: color,  bmiMessage: message, });
   }, [formik.values ]);
 
+  const rowClick = (row) =>{
+    formik.setValues({user_id: authData.data.id,...row});
+  }  
+
   return (
     <>
       { (isLoading||isAdding)  && <Spinner />}
 
-      <Form noValidate onSubmit={formik.onSubmit} >
+      <button className="example-custom-input" onClick={handleClick}>
+        {moment(startDate).format('YYYY-MM-DD hh:mm')}
+      </button>
 
+      {isOpen && (
+        <DatePicker selected={startDate} onChange={handleChange} />
+      )}
+
+      <DatePicker
+              isClearable
+              type="text"
+              className={"form-control"}
+              showTimeSelect
+              timeFormat="HH:mm"
+              timeIntervals={15}
+              timeCaption="time"
+              dateFormat="yyyy-MM-dd hh:mm"
+              name="date_time"
+       />
+
+      <Form noValidate onSubmit={formik.onSubmit} >
         <Row className="p-2 border bg-light">
           <Form.Group className="col-4">
-            <Form.Label>Date/Time</Form.Label>
-            <Form.Control
-              className="date_time"
-              type="date"
-              placeholder="date_time"
-              name="date_time"
-              value={formik.values.date_time}
-              onChange={formik.handleChange}
-              isInvalid={!!formik.errors.date_time}
+            <Form.Label>Date</Form.Label>
+            <Form.Control 
+              type="text" 
+              name="date_time" 
+              hidden={true}
+              value={formik.values.date_time} 
+              onChange={formik.handleChange} 
             />
           </Form.Group>
           <Form.Group className="col-4">
@@ -227,10 +264,10 @@ function Forma() {
           </Col>
         </Row>
       </Form>
-        {/* <ReactJson src={bmiData.data} /> */}
+        {/* <ReactJson src={data} /> */}
         <div style={{paddingTop: "23px"}}>
         { bmiData?.OK && 
-            <BmiTable data={bmiData.data} />
+            <BmiTable data={bmiData.data} rowClick={rowClick} />
         }    
         </div>
     </>

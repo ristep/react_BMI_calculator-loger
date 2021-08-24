@@ -8,6 +8,7 @@ const bmiGetHistoryQuery = (par) => {
       key: {
         user_id: par,
       },
+      sort:[ "date_time DESC" ],
       attributes: [
         "id",
         "user_id",
@@ -16,7 +17,7 @@ const bmiGetHistoryQuery = (par) => {
         "height",
         "weight",
         "bmic",
-        "date_time",
+        "date_time"
       ],
     },
   };

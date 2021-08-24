@@ -5,7 +5,7 @@ import React from 'react'
 import { Table, Button } from 'react-bootstrap'
 import { useTable } from 'react-table'
 
-const Tabela = ({ columns, data }) => {
+const Tabela = ({ columns, data, rowClick }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -14,15 +14,14 @@ const Tabela = ({ columns, data }) => {
     prepareRow,
   } = useTable({
     columns,
-    data,
+    data
   })
-
 const { authData } = useAuthData();  
 const { removeBmiItem, isRemoving }   = useBmiHistory({userID: authData.data.id}); 
 
-  const cellRender = (cell) => {
+  const cellRender = (cell,row) => {
     if(cell.column.Header==="Delete"){ 
-      return (<Button variant="danger" size="sm" onClick={()=>removeBmiItem({ id: cell.value})} >{cell.value}</Button> );
+      return (<Button variant="danger" size="sm" onClick={()=>removeBmiItem({ id: cell.value})} >X</Button> );
     }  
     return cell.render('Cell');
   }
@@ -44,9 +43,9 @@ const { removeBmiItem, isRemoving }   = useBmiHistory({userID: authData.data.id}
         {rows.map((row, i) => {
           prepareRow(row)
           return (
-            <tr {...row.getRowProps()}>
+            <tr {...row.getRowProps()} onClick={()=>rowClick({ ...row.values })}>
               {row.cells.map(cell => {
-                return <td {...cell.getCellProps()}>{cellRender(cell)}</td>
+                return <td {...cell.getCellProps()}>{cellRender(cell,row)}</td>
               })}
             </tr>
           )
@@ -58,7 +57,7 @@ const { removeBmiItem, isRemoving }   = useBmiHistory({userID: authData.data.id}
 }
 
 const  BmiTable = (props) => {
-  const { data } = props;
+  const { data, rowClick } = props;
   const columns = React.useMemo(
     () => [
           {
@@ -82,7 +81,7 @@ const  BmiTable = (props) => {
             accessor: 'bmic',
           },
           {
-            Header: 'Date Time',
+            Header: 'Date time',
             accessor: 'date_time',
           },
           {
@@ -93,7 +92,7 @@ const  BmiTable = (props) => {
   );
 
  return (
-     <Tabela columns={columns} data={data} />
+     <Tabela columns={columns} data={data} rowClick={rowClick} />
   )
 }
 
