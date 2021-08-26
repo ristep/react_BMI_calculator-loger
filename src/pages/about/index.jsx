@@ -7,7 +7,7 @@ import { useBmiHistory } from "hooks/useBmiHistory";
 const About = (props) => {
   const { setTheme } = props;
   const { authData } = useAuthData();
-  const { bmiHistoryData } = useBmiHistory();
+  const { data } = useBmiHistory({userID: authData.data.id}); 
 
   const them = (theme) => ("./styles/" + theme + "/main.css" );
 
@@ -20,7 +20,7 @@ const About = (props) => {
       <Button style={{backgroundColor:"rgb(44, 62, 80)"}}    onClick={()=>setTheme(them("Flatly"))}>Flatly</Button>
       <Button style={{backgroundColor:"rgb(47, 164, 231)"}}  onClick={()=>setTheme(them("Cerulean"))}>Cerulean</Button>
       <Button style={{backgroundColor:"rgb(69, 130, 236)"}}  onClick={()=>setTheme(them("Litera"))}>Litera</Button>
-      <ReactJson src={bmiHistoryData} />
+      <ReactJson src={data} />
    </Container>
 
 );

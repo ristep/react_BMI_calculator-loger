@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
+//import { useFormik } from "formik";
 import * as yup from "yup";
 import {
   Button,
@@ -10,17 +10,20 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
-import { useAuthData } from "hooks/authData";
-import ReactJson from "react-json-view";
+
 import { useBmiHistory } from "hooks/useBmiHistory";
-// import ReactJson from "react-json-view";
+import { useAuthData } from "hooks/authData";
+import BmiTable from "components/bmiTable";
+import Spinner from "components/spinner";
+import FieldDatetime from "components/DateTime";
 
 const initialValues = {
-  age: "ageNone",
+  age: "None",
   gender: "Other",
   weight: 90,
   height: 1.75,
   BMI: 0,
+  date_time: ""
 };
 
 const bmiRanges = [
@@ -54,13 +57,13 @@ const genderCor = (gender) => {
 };
 
 const ageCorTable = {
-"ageNone": -0.0,
-"age1924": -0.0,
-"age2534": -1.0,
-"age3544": -2.0,
-"age4554": -3.0,
-"age5564": -4.0,
-"age65AB": -5.0,
+"None": -0.0,
+"19-24": -0.0,
+"25-34": -1.0,
+"35-44": -2.0,
+"45-54": -3.0,
+"55-64": -4.0,
+"65-120": -5.0,
 };
 
 const ageCor = (age) => {
@@ -84,17 +87,32 @@ const schema = yup.object().shape({
   gender: yup.string().oneOf(["Male", "Female", "Other"]),
   weight: yup.number().min(25).max(250).required(),
   height: yup.number().min(0.6).max(2.3).required(),
+  date_time: yup.date().required(),
 });
 
 function Forma() {
-  const [data, setData] = useState(initialValues);
-  const { bmiAddHistory, bmiStaleData, bmiGetHistory } = useBmiHistory();
   const { authData } = useAuthData();
+  const [ data, setData ] = useState(initialValues);
+  const { data:bmiData, addBmiHistory, isAdding, isLoading  } = useBmiHistory({userID: authData.data.id}); 
 
-  const formik = useFormik({
-    validationSchema: schema,
-    initialValues
-  });
+  const [startDate, setStartDate] = useState(new Date());
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleChange = (e) => {
+    setIsOpen(!isOpen);
+    setStartDate(e);
+  };
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    setIsOpen(!isOpen);
+  };
+
+  const formik = useFormik({  validationSchema: schema,  initialValues, onSubmit: (values) => { values.preventdefaults(); }  });
+
+  const addBmi = () => {
+    addBmiHistory({user_id: authData.data.id,...data});
+  };
 
   const submitBmi = () => {
     bmiAddHistory({...data, user_id: authData.data.id});
@@ -107,21 +125,31 @@ function Forma() {
   useEffect(() => {
     const bmi = (formik.values.weight / Math.pow(formik.values.height, 2));
     const { color, message } = bmiDescription(bmi+ageCor(formik.values.age)+genderCor(formik.values.gender));
-    setData({
-      ...formik.values,
-      BMI: bmi.toFixed(2),
-      bmiColor: color,
-      bmiMessage: message,
-    });
-  }, [
-    formik.values 
-  ]);
+    setData({...formik.values,  BMI: bmi.toFixed(2),  bmiColor: color,  bmiMessage: message, });
+  }, [formik.values ]);
+
+  const rowClick = (row) =>{
+    formik.setValues({user_id: authData.data.id,...row});
+  }  
 
   return (
-    <Container style={{maxWidth: "680px"}}>
-      <Form noValidate>
+    <>
+      { (isLoading||isAdding)  && <Spinner />}
+
+      <Form noValidate onSubmit={formik.onSubmit} >
         <Row className="p-2 border bg-light">
-          <Form.Group className="col-6">
+          <Form.Group className="col-4">
+            <Form.Label>Date</Form.Label>
+            <FieldDatetime 
+              dateFormat="YYYY-MM-DD"
+              name="date_time"
+              field="date_time"
+              value={formik.values.date_time}
+              onChange={formik.handleChange}
+              isInvalid={!!formik.errors.date_time}
+            />
+          </Form.Group>
+          <Form.Group className="col-4">
             <Form.Label>Gender</Form.Label>
             <Form.Select name="gender" onChange={formik.handleChange}>
               <option value="Male">Male</option>
@@ -129,16 +157,16 @@ function Forma() {
               <option value="Other">Other</option>
             </Form.Select>
           </Form.Group>
-          <Form.Group className="col-6">
+          <Form.Group className="col-4">
             <Form.Label>Age group</Form.Label>
             <Form.Select name="age" onChange={formik.handleChange}>
-              <option value="ageNone">Select</option>
-              <option value="age1924">19-24</option>
-              <option value="age2534">25-34</option>
-              <option value="age3544">35-44</option>
-              <option value="age4554">45-54</option>
-              <option value="age5564">55-64</option>
-              <option value="age65AB">65-120</option>
+              <option value="None">None</option>
+              <option value="19-24">19-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65-120">65-120</option>
             </Form.Select>
           </Form.Group>
         </Row>
@@ -208,14 +236,26 @@ function Forma() {
           </Col>
           <Col></Col>
           <Col>
-            <Button onClick={submitBmi} style={{contentAlign: "center", width: "100%", marginTop: "0.5em"}}>
+            <Button
+              onClick={addBmi}
+              style={{
+                contentAlign: "center",
+                width: "100%",
+                marginTop: "0.5em",
+              }}
+            >
               Log data
             </Button>
           </Col>
         </Row>
-        {/* <ReactJson src={data} /> */}
       </Form>
-    </Container>
+        {/* <ReactJson src={data} /> */}
+        <div style={{paddingTop: "23px"}}>
+        { bmiData?.OK && 
+            <BmiTable data={bmiData.data} rowClick={rowClick} />
+        }    
+        </div>
+    </>
   );
 }
 
@@ -225,7 +265,7 @@ const Home = () => {
   return (
     <Container>
       <Forma setValues />
-      <ReactJson src={bmiHistoryData} />
+      {/* <ReactJson src={bmiHistoryData} /> */}
     </Container>
   );
 };
