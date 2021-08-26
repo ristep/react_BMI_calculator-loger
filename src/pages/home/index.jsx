@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-//import { useFormik } from "formik";
+import { useFormik } from "formik";
 import * as yup from "yup";
 import {
   Button,
@@ -15,7 +15,6 @@ import { useBmiHistory } from "hooks/useBmiHistory";
 import { useAuthData } from "hooks/authData";
 import BmiTable from "components/bmiTable";
 import Spinner from "components/spinner";
-import FieldDatetime from "components/DateTime";
 
 const initialValues = {
   age: "None",
@@ -132,9 +131,8 @@ function Forma() {
         <Row className="p-2 border bg-light">
           <Form.Group className="col-4">
             <Form.Label>Date</Form.Label>
-            <FieldDatetime 
+            <Form.Control 
               dateFormat="YYYY-MM-DD"
-              name="date_time"
               field="date_time"
               value={formik.values.date_time}
               onChange={formik.handleChange}
