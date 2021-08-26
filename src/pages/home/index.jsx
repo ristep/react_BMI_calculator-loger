@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useFormik } from "formik";
+//import { useFormik } from "formik";
 import * as yup from "yup";
 import {
   Button,
@@ -10,16 +10,12 @@ import {
   Row,
   Badge,
 } from "react-bootstrap";
-import "react-datepicker/dist/react-datepicker.css";
 
 import { useBmiHistory } from "hooks/useBmiHistory";
 import { useAuthData } from "hooks/authData";
 import BmiTable from "components/bmiTable";
 import Spinner from "components/spinner";
-import DatePicker from "react-datepicker";
-import moment from "moment";
-
-// import ReactJson from "react-json-view";
+import FieldDatetime from "components/DateTime";
 
 const initialValues = {
   age: "None",
@@ -132,36 +128,17 @@ function Forma() {
     <>
       { (isLoading||isAdding)  && <Spinner />}
 
-      <button className="example-custom-input" onClick={handleClick}>
-        {moment(startDate).format('YYYY-MM-DD hh:mm')}
-      </button>
-
-      {isOpen && (
-        <DatePicker selected={startDate} onChange={handleChange} />
-      )}
-
-      <DatePicker
-              isClearable
-              type="text"
-              className={"form-control"}
-              showTimeSelect
-              timeFormat="HH:mm"
-              timeIntervals={15}
-              timeCaption="time"
-              dateFormat="yyyy-MM-dd hh:mm"
-              name="date_time"
-       />
-
       <Form noValidate onSubmit={formik.onSubmit} >
         <Row className="p-2 border bg-light">
           <Form.Group className="col-4">
             <Form.Label>Date</Form.Label>
-            <Form.Control 
-              type="text" 
-              name="date_time" 
-              hidden={true}
-              value={formik.values.date_time} 
-              onChange={formik.handleChange} 
+            <FieldDatetime 
+              dateFormat="YYYY-MM-DD"
+              name="date_time"
+              field="date_time"
+              value={formik.values.date_time}
+              onChange={formik.handleChange}
+              isInvalid={!!formik.errors.date_time}
             />
           </Form.Group>
           <Form.Group className="col-4">
