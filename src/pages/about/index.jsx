@@ -22,7 +22,8 @@ const About = (props) => {
       <Button style={{backgroundColor:"rgb(69, 130, 236)"}}  onClick={()=>setTheme(them("Litera"))}>Litera</Button>
       <ReactJson src={data} />
    </Container>
-  );
+
+);
 
 }
 

@@ -113,6 +113,14 @@ function Forma() {
     addBmiHistory({user_id: authData.data.id,...data});
   };
 
+  const submitBmi = () => {
+    bmiAddHistory({...data, user_id: authData.data.id});
+  };
+
+  useEffect(() => {
+    bmiGetHistory(authData.data.id);
+  },[data]);
+
   useEffect(() => {
     const bmi = (formik.values.weight / Math.pow(formik.values.height, 2));
     const { color, message } = bmiDescription(bmi+ageCor(formik.values.age)+genderCor(formik.values.gender));
@@ -222,7 +230,7 @@ function Forma() {
                 BMI = {data.BMI}
               </Badge>
             </h2>
-            <label for="bmiIndicator"> {data.bmiMessage}</label>
+            <label for="bmiIndicator">{data.bmiMessage}</label>
           </Col>
           <Col></Col>
           <Col>
@@ -250,9 +258,12 @@ function Forma() {
 }
 
 const Home = () => {
+  const { bmiHistoryData } = useBmiHistory();
+  
   return (
     <Container>
       <Forma setValues />
+      {/* <ReactJson src={bmiHistoryData} /> */}
     </Container>
   );
 };

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { ProvideBmiHistory } from 'hooks/useBmiHistory';
  
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,7 +19,9 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ProvideBmiHistory>
+        <App />
+      </ProvideBmiHistory>
     </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById('root')

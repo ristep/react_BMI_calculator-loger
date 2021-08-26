@@ -1,5 +1,5 @@
 // import "./form.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Card,
@@ -16,6 +16,7 @@ import * as yup from "yup";
 import "./index.scss";
 import { useAuthData } from "hooks/authData";
 import UserCard from "components/userCard.jsx";
+import { useBmiHistory } from "hooks/useBmiHistory";
 
 let valSchema = yup.object().shape({
   username: yup.string().required(),
@@ -27,6 +28,17 @@ const LoginForm = () => {
   const { onBlur, errors } = useValiHook({ valSchema, formData });
   const { authData, getKey, clearKey } = useAuthData();
   const history = useHistory();
+  const { bmiGetHistory, bmiStaleData } = useBmiHistory();
+
+  useEffect(() => {
+    if(authData.OK){
+      bmiGetHistory(authData.data.id);
+    }
+    else{
+      bmiStaleData();
+    };  
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authData]);
 
   const onChange = (ev) => {
     setFormData({ ...formData, [ev.target.name]: ev.target.value });

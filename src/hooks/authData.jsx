@@ -10,7 +10,7 @@ const getUserTokenQuery = (username, password) => ({
   },
 });
 
-const useUserLoginData = () => {
+const UserLogin = () => {
   const [authData, setAuthData] = useState(initauthData);
 
   const clearKey   = () => {
@@ -46,19 +46,17 @@ const useUserLoginData = () => {
           });
         });
     })();
-    //    setUserdata(getUserTokenQuery(username, password));
   };
-
 
   return ( { authData, getKey, clearKey } );
 }
 
-const userDataContext = createContext();
+export const userDataContext = createContext();
 
 // Provider component that wraps your app and makes auth object ...
 // ... available to any child component that calls useUserLoginData().
 export function ProvideAuthData({ children }) {
-    const  authObject  = useUserLoginData();
+    const  authObject  = UserLogin();
     return <userDataContext.Provider value={authObject}>{children}</userDataContext.Provider>;
   }  
 
